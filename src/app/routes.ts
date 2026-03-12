@@ -4,14 +4,19 @@ import { HomePage } from "./components/home/HomePage";
 import { ProfilePage } from "./components/profile/ProfilePage";
 import { ProjectsPage } from "./components/projects/ProjectsPage";
 
-export const router = createBrowserRouter([
+export const router = createBrowserRouter(
+  [
+    {
+      path: "/",
+      Component: Root,
+      children: [
+        { index: true, Component: HomePage },
+        { path: "profile", Component: ProfilePage },
+        { path: "projects", Component: ProjectsPage },
+      ],
+    },
+  ],
   {
-    path: "/",
-    Component: Root,
-    children: [
-      { index: true, Component: HomePage },
-      { path: "profile", Component: ProfilePage },
-      { path: "projects", Component: ProjectsPage },
-    ],
-  },
-]);
+    basename: "/Eun_Design_Portfolio",
+  }
+);
