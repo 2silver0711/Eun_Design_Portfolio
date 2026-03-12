@@ -2,6 +2,7 @@ import { defineConfig } from 'vite'
 import path from 'path'
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
+import fs from 'fs'
 
 // Plugin to handle figma:asset virtual module scheme
 function figmaAssetPlugin() {
@@ -16,10 +17,18 @@ function figmaAssetPlugin() {
     },
     load(id: string) {
       if (id.startsWith('\0' + VIRTUAL_PREFIX)) {
-        // Extract the asset hash from the virtual module ID
-        const assetHash = id.slice(('\0' + VIRTUAL_PREFIX).length);
-        // Return empty data URL as placeholder since we don't have the actual assets
-        // In a real implementation, this would load the actual asset from src/assets/
+        // Extract the asset filename from the virtual module ID
+        const assetFilename = id.slice(('\0' + VIRTUAL_PREFIX).length);
+        // Map to actual file in src/assets/
+        const assetPath = path.resolve(__dirname, 'src/assets', assetFilename);
+        
+        // Check if file exists
+        if (fs.existsSync(assetPath)) {
+          // Return import statement that Vite can process
+          return `import asset from ${JSON.stringify(assetPath)}; export default asset;`;
+        }
+        
+        // Fallback to placeholder if file not found
         return `export default "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="`;
       }
     }
